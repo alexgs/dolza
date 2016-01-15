@@ -1,0 +1,25 @@
+{
+  "name": "dolza",
+  "version": "0.1.0",
+  "description": "A lightweight dependency injection framework for Node.js and JavaScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --es_staging"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philgs/dolza.git"
+  },
+  "dependencies": {
+    "immutable": "^3.7.6"
+  },
+  "keywords": [
+    "dependency injection"
+  ],
+  "author": "Phil Gates-Shannon <phil.gs@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/philgs/dolza/issues"
+  },
+  "homepage": "https://github.com/philgs/dolza"
+}
