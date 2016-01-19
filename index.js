@@ -19,7 +19,7 @@ function dolzaFactory() {
     container.register = ( name, factory, dependencies ) => {
         // Standardize falsy values of `dependencies`
         if ( !dependencies ) {
-            // TODO Log a warning unless `dependencies` comes in as undefined)
+            // TODO Log a warning unless `dependencies` comes in as undefined
             dependencies = null;
         }
 
@@ -81,8 +81,8 @@ function dolzaFactory() {
         let record = factories.get( name );
         if ( !record ) {
             // record is falsy
-            throw new ReferenceError( `Factory ${name} is not registered, '
-                    + 'and no stored object ${name} was found` );
+            throw new ReferenceError( `Factory ${name} is not registered, `
+                    + `and no stored object ${name} was found` );
         }
 
         // Inject the dependencies & return the object produced by the factory
