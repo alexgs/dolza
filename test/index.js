@@ -369,7 +369,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
         });
     });
 
-    context( 'when storing data, an object, or a function, ', () => {
+    context( 'when storing data, an object, or a function', () => {
         let nameF = 'myfunc'
             , myFunction
             ;

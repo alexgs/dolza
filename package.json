@@ -13,6 +13,14 @@
   "dependencies": {
     "immutable": "^3.7.6"
   },
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "chai": "^2.1.0",
+    "chai-as-promised": "^4.1.1",
+    "dirty-chai": "^1.2.1",
+    "sinon": "^1.10.2",
+    "sinon-chai": "^2.5.0"
+  },
   "keywords": [
     "dependency injection"
   ],
