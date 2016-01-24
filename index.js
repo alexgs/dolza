@@ -42,21 +42,8 @@ function dolzaFactory() {
         // If we don't have the requested item in the datastore, try to make it
         // from a registered factory
         if ( !dataStoreHas( name ) ) {
-            let record = factories.get( name );
-            if ( !record ) {
-                // record is falsy
-                throw new ReferenceError( `Factory ${name} is not registered, `
-                    + `and no stored object ${name} was found` );
-            }
-
-            // Inject the dependencies & store the object produced by the factory
-            let factoryProduct = inject( record.fac, record.dep );
-            if ( !factoryProduct ) {
-                // A simple error can make a factory that doesn't return anything,
-                // so we should let the dev know that something isn't right.
-                throw new Error( `${name} has a falsy product from its factory` );
-            }
-            container.store( name, factoryProduct );
+            let product = getFactoryProduct( name );
+            container.store( name, product );
         }
 
        return dataStore.get( name );
@@ -90,6 +77,24 @@ function dolzaFactory() {
 
     function dataStoreHas( name ) {
         return dataStore.has( name );
+    }
+
+    function getFactoryProduct( name ) {
+        let record = factories.get( name );
+        if ( !record ) {
+            // record is falsy
+            throw new ReferenceError( `Factory ${name} is not registered, `
+                + `and no stored object ${name} was found` );
+        }
+
+        // Inject the dependencies & store the object produced by the factory
+        let factoryProduct = inject( record.fac, record.dep );
+        if ( !factoryProduct ) {
+            // A simple error can make a factory that doesn't return anything,
+            // so we should let the dev know that something isn't right.
+            throw new Error( `${name} has a falsy product from its factory` );
+        }
+        return factoryProduct;
     }
 
     return container;
