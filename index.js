@@ -8,7 +8,8 @@
 
 'use strict';
 
-let Immutable = require( 'immutable' );
+let Immutable = require( 'immutable' )
+    ;
 
 function dolzaFactory() {
     let container = Object.create( null )
@@ -41,9 +42,11 @@ function dolzaFactory() {
         // If we don't have the requested item in the datastore, try to make it
         // from a registered factory
         if ( !dataStoreHas( name ) ) {
-            container.store( name, makeFactoryProduct( name ) );
+            let product = getFactoryProduct( name );
+            container.store( name, product );
         }
-        return dataStore.get( name );
+
+       return dataStore.get( name );
     };
 
     container.store = ( name, data ) => {
@@ -76,16 +79,15 @@ function dolzaFactory() {
         return dataStore.has( name );
     }
 
-    function makeFactoryProduct( name ) {
-        // Find the factory and its list of dependencies
+    function getFactoryProduct( name ) {
         let record = factories.get( name );
         if ( !record ) {
             // record is falsy
             throw new ReferenceError( `Factory ${name} is not registered, `
-                    + `and no stored object ${name} was found` );
+                + `and no stored object ${name} was found` );
         }
 
-        // Inject the dependencies & return the object produced by the factory
+        // Inject the dependencies & store the object produced by the factory
         let factoryProduct = inject( record.fac, record.dep );
         if ( !factoryProduct ) {
             // A simple error can make a factory that doesn't return anything,
