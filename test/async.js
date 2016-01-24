@@ -66,8 +66,10 @@ describe( 'Dolza', () => {
             app.getTitle = () => {
                 return appConfig.title;
             };
+
+            return app;
         };
-        dolza.register( 'app', appFactory );
+        dolza.register( 'app', appFactory, [ 'config', 'delay' ] );
 
         let app;
         expect( () => { app = dolza.get( 'app' ); } ).to.not.throw( Error );

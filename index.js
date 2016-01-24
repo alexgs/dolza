@@ -8,7 +8,8 @@
 
 'use strict';
 
-let Immutable = require( 'immutable' );
+let Immutable = require( 'immutable' )
+    ;
 
 function dolzaFactory() {
     let container = Object.create( null )
@@ -41,9 +42,24 @@ function dolzaFactory() {
         // If we don't have the requested item in the datastore, try to make it
         // from a registered factory
         if ( !dataStoreHas( name ) ) {
-            container.store( name, makeFactoryProduct( name ) );
+            let record = factories.get( name );
+            if ( !record ) {
+                // record is falsy
+                throw new ReferenceError( `Factory ${name} is not registered, `
+                    + `and no stored object ${name} was found` );
+            }
+
+            // Inject the dependencies & store the object produced by the factory
+            let factoryProduct = inject( record.fac, record.dep );
+            if ( !factoryProduct ) {
+                // A simple error can make a factory that doesn't return anything,
+                // so we should let the dev know that something isn't right.
+                throw new Error( `${name} has a falsy product from its factory` );
+            }
+            container.store( name, factoryProduct );
         }
-        return dataStore.get( name );
+
+       return dataStore.get( name );
     };
 
     container.store = ( name, data ) => {
@@ -74,25 +90,6 @@ function dolzaFactory() {
 
     function dataStoreHas( name ) {
         return dataStore.has( name );
-    }
-
-    function makeFactoryProduct( name ) {
-        // Find the factory and its list of dependencies
-        let record = factories.get( name );
-        if ( !record ) {
-            // record is falsy
-            throw new ReferenceError( `Factory ${name} is not registered, `
-                    + `and no stored object ${name} was found` );
-        }
-
-        // Inject the dependencies & return the object produced by the factory
-        let factoryProduct = inject( record.fac, record.dep );
-        if ( !factoryProduct ) {
-            // A simple error can make a factory that doesn't return anything,
-            // so we should let the dev know that something isn't right.
-            throw new Error( `${name} has a falsy product from its factory` );
-        }
-        return factoryProduct;
     }
 
     return container;
