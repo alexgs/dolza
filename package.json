@@ -1,10 +1,10 @@
 {
   "name": "dolza",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A lightweight dependency injection framework for Node.js and JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --es_staging"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -14,11 +14,19 @@
     "immutable": "^3.7.6"
   },
   "devDependencies": {
-    "mocha": "^2.2.5",
-    "chai": "^2.1.0",
-    "chai-as-promised": "^4.1.1",
-    "dirty-chai": "^1.2.1",
-    "sinon": "^1.10.2",
+    "@types/mocha": "^2.2.41",
+    "babel-cli": "^6.24.1",
+    "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-plugin-transform-exponentiation-operator": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "dirty-chai": "^2.0.0",
+    "mocha": "^3.0.0",
+    "sinon": "^2.3.5",
     "sinon-chai": "^2.5.0"
   },
   "keywords": [
@@ -29,5 +37,8 @@
   "bugs": {
     "url": "https://github.com/philgs/dolza/issues"
   },
-  "homepage": "https://github.com/philgs/dolza"
+  "homepage": "https://github.com/philgs/dolza",
+  "engines": {
+    "node": ">=6.10"
+  }
 }

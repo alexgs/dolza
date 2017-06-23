@@ -1,15 +1,7 @@
-/* Adapted from _Node.js Design Patterns_, Ch. 5, by Mario Casciaro
- * (ISBN 9781783287314)
- */
-
-/* As of 2016-01-15 and Node.js v5.1.1, this needs to be run with the
- * `--es_staging` flag, e.g. `node --es_staging index.js`.
- */
-
 'use strict';
+// Adapted from _Node.js Design Patterns_, Ch. 5, by Mario Casciaro (ISBN 9781783287314)
 
-let Immutable = require( 'immutable' )
-    ;
+import Immutable from 'immutable';
 
 function dolzaFactory() {
     let container = Object.create( null )
@@ -100,5 +92,5 @@ function dolzaFactory() {
     return container;
 }
 
-module.exports = dolzaFactory();
-module.exports._factory = dolzaFactory;
+export default dolzaFactory();
+export { dolzaFactory as _factory };
