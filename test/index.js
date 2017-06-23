@@ -17,26 +17,26 @@ let dolzaFactory = require( '../index' )._factory
     , sinon = require( 'sinon' )
     ;
 
-chai.use( require( 'dirty-chai' ) );
 chai.use( require( 'sinon-chai' ) );
+chai.use( require( 'dirty-chai' ) );
 
-describe( 'Dolza (a lightweight dependency injection framework)', () => {
-    context( 'when registering a module factory', () => {
-        context( 'with the two-argument form', () => {
+describe( 'Dolza (a lightweight dependency injection framework)', function() {
+    context( 'when registering a module factory', function() {
+        context( 'with the two-argument form', function() {
             let name, factory;
 
-            beforeEach( () => {
+            beforeEach( function() {
                 dolza = dolzaFactory();
                 name = 'hayes';
-                factory = () => {
+                factory = function() {
                     let value = 8;
                     let math = Object.create( null );
 
-                    math.double = () => {
+                    math.double = function() {
                         return value * 2;
                     };
 
-                    math.square = () => {
+                    math.square = function() {
                         return value * value;
                     };
 
@@ -44,13 +44,13 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 };
             });
 
-            afterEach( () => {
+            afterEach( function() {
                 dolza = null;
                 name = null;
                 factory = null;
             });
 
-            it( 'will accept arguments `(name, factory)`', () => {
+            it( 'will accept arguments `(name, factory)`', function() {
                 sinon.spy( dolza, 'register' );
                 dolza.register( name, factory );
 
@@ -60,7 +60,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 dolza.register.restore();
             });
 
-            it( 'will return an instantiated object from the factory', () => {
+            it( 'will return an instantiated object from the factory', function() {
                 let factorySpy = sinon.spy( factory );
                 dolza.register( name, factorySpy );
                 let obj = dolza.get( name );
@@ -76,37 +76,37 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 expect( o1 ).to.equal( o2 );
             });
 
-            it( 'will throw an error if an unnamed factory is requested', () => {
+            it( 'will throw an error if an unnamed factory is requested', function() {
                 let noName = 'hunter';
                 expect( noName ).to.not.equal( name );
 
                 dolza.register( name, factory );
-                expect( () => { dolza.get( noName ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.get( noName ) } ).to.throw( ReferenceError );
             });
 
-            it( 'will throw an error if `name` or `factory` is falsy', () => {
-                expect( () => { dolza.register( '', factory ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( undefined, factory ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( null, factory ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( 0, factory ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( NaN, factory ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, '' ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, undefined ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, null ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, 0 ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, NaN ) } ).to.throw( ReferenceError );
+            it( 'will throw an error if `name` or `factory` is falsy', function() {
+                expect( function() { dolza.register( '', factory ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( undefined, factory ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( null, factory ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( 0, factory ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( NaN, factory ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, '' ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, undefined ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, null ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, 0 ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, NaN ) } ).to.throw( ReferenceError );
             });
 
-            it( 'will throw an error if `name` is already registered', () => {
+            it( 'will throw an error if `name` is already registered', function() {
                 dolza.register( name, factory );
-                expect( () => {
-                    dolza.register( name, () => { return 5 } )
+                expect( function() {
+                    dolza.register( name, function() { return 5 } )
                 }).to.throw( Error );
             });
 
         });
 
-        context( 'with the three-argument form', () => {
+        context( 'with the three-argument form', function() {
             let fibonacciFactory, fibonacciGenFactory
                 , primeFactory, primesGenFactory
                 , fancyFactory
@@ -117,15 +117,15 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 , nameTop = 'fancy-factory'
                 ;
 
-            beforeEach( () => {
+            beforeEach( function() {
                 dolza = dolzaFactory();
-                primesGenFactory = () => {
+                primesGenFactory = function() {
                     let container = Object.create( null );
                     let primes = [ 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37,
                         41, 43, 47, 53, 59, 61, 67, 71 ];
                     let index = primes.length;
 
-                    container.next = () => {
+                    container.next = function() {
                         index++;
                         if ( index >= container.limit() ) {
                             index = 0;
@@ -133,7 +133,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                         return primes[ index ];
                     };
 
-                    container.limit = () => {
+                    container.limit = function() {
                         return primes.length;
                     };
 
@@ -155,18 +155,18 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                         return result;
                     };
 
-                    container.getGenerator = () => {
+                    container.getGenerator = function() {
                         return primeGen;
                     };
 
                     return container;
                 };
-                fibonacciGenFactory = () => {
+                fibonacciGenFactory = function() {
                     let container = Object.create( null );
                     let fib = [ 1, 1 ];
                     let index = -1;
 
-                    container.next = () => {
+                    container.next = function() {
                         index++;
                         if ( index >= container.limit() ) {
                             index = 0;
@@ -177,7 +177,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                         return fib[ index ];
                     };
 
-                    container.limit = () => { return 100 };
+                    container.limit = function() { return 100 };
 
                     return container;
                 };
@@ -193,7 +193,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                         return result;
                     };
 
-                    container.getGenerator = () => {
+                    container.getGenerator = function() {
                         return fibGen;
                     };
 
@@ -208,11 +208,11 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                         return primeList.getPrime( id ) * fibList.getFibonacci( id );
                     };
 
-                    container.getPrimeList = () => {
+                    container.getPrimeList = function() {
                         return primeList;
                     };
 
-                    container.getFibonacciList = () => {
+                    container.getFibonacciList = function() {
                         return fibList;
                     };
 
@@ -220,7 +220,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 };
             });
 
-            afterEach( () => {
+            afterEach( function() {
                 dolza = null;
                 primesGenFactory = null;
                 primeFactory = null;
@@ -229,7 +229,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 fancyFactory = null;
             });
 
-            it( 'will accept arguments `(name, factory, dependencies)`', () => {
+            it( 'will accept arguments `(name, factory, dependencies)`', function() {
                 sinon.spy( dolza, 'register' );
                 dolza.register( namePgf, primesGenFactory );
                 dolza.register( namePf, primeFactory, [ namePgf ] );
@@ -243,7 +243,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 dolza.register.restore();
             });
 
-            it( 'will instantiate each standalone dependency', () => {
+            it( 'will instantiate each standalone dependency', function() {
                 let pgfSpy = sinon.spy( primesGenFactory );
                 let fgfSpy = sinon.spy( fibonacciGenFactory );
 
@@ -259,7 +259,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 expect( fgfSpy ).to.have.been.calledWithExactly();
             });
 
-            it( 'will instantiate each dependency in an acyclic dependency graph', () => {
+            it( 'will instantiate each dependency in an acyclic dependency graph', function() {
                 let pgfSpy = sinon.spy( primesGenFactory );
                 let pfSpy  = sinon.spy( primeFactory );
                 let fgfSpy = sinon.spy( fibonacciGenFactory );
@@ -283,7 +283,7 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 expect( ffSpy ).to.have.been.calledOnce();
             });
 
-            it( 'will inject each dependency into the factory', () => {
+            it( 'will inject each dependency into the factory', function() {
                 // Register dependencies and build the dep graph
                 dolza.register( nameTop, fancyFactory, [ namePf, nameFf ]);
                 dolza.register( namePf, primeFactory, [ namePgf ] );
@@ -302,66 +302,66 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
                 expect( top.getFibonacciList() ).to.equal( dolzaFibs );
             });
 
-            it( 'will return an instantiated object from the factory', () => {
+            it( 'will return an instantiated object from the factory', function() {
                 dolza.register( nameFf, fibonacciFactory, [ nameFgf ] );
                 dolza.register( nameFgf, fibonacciGenFactory );
                 let dolzaFibs = dolza.get( nameFf );
                 expect( dolzaFibs ).to.exist();
             });
 
-            it( 'will throw an error if an unnamed factory is requested', () => {
+            it( 'will throw an error if an unnamed factory is requested', function() {
                 let noName = 'hunter';
                 dolza.register( nameFf, fibonacciFactory, [ nameFgf ] );
                 dolza.register( nameFgf, fibonacciGenFactory );
                 let dolzaFibs = dolza.get( nameFf );
                 expect( dolzaFibs ).to.exist();
-                expect( () => { dolza.get( noName ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.get( noName ) } ).to.throw( ReferenceError );
             });
 
-            it( 'will throw an error if `name` or `factory` is falsy', () => {
+            it( 'will throw an error if `name` or `factory` is falsy', function() {
                 let factory = primesGenFactory
                     , name = 'prime-factory'
                     , dep = [ 'prime-generator-factory' ]
                     ;
 
-                expect( () => { dolza.register( '', factory, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( undefined, factory, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( null, factory, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( 0, factory, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( NaN, factory, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, '', dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, undefined, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, null, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, 0, dep ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, NaN, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( '', factory, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( undefined, factory, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( null, factory, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( 0, factory, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( NaN, factory, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, '', dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, undefined, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, null, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, 0, dep ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, NaN, dep ) } ).to.throw( ReferenceError );
             });
 
-            it( 'will throw an error if `dependencies` is not an Array', () => {
+            it( 'will throw an error if `dependencies` is not an Array', function() {
                 let factory = primesGenFactory
                     , name = 'prime-factory'
                     , dep = [ 'prime-generator-factory' ]
                     ;
 
                 // Falsy values are fine, but they are treated as the 2-arg form
-                expect( () => { dolza.register( name, factory, 0) } ).to.not.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, null) } ).to.not.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, '') } ).to.not.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, NaN) } ).to.not.throw( ReferenceError );
+                expect( function() { dolza.register( name, factory, 0) } ).to.not.throw( ReferenceError );
+                expect( function() { dolza.register( name, factory, null) } ).to.not.throw( ReferenceError );
+                expect( function() { dolza.register( name, factory, '') } ).to.not.throw( ReferenceError );
+                expect( function() { dolza.register( name, factory, NaN) } ).to.not.throw( ReferenceError );
 
                 // Truthy, non-array values throw an error
-                expect( () => { dolza.register( name, factory, 'prime-generator-factory' ) } )
+                expect( function() { dolza.register( name, factory, 'prime-generator-factory' ) } )
                     .to.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, 1 ) } ).to.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, () => { return 0; } ) } )
+                expect( function() { dolza.register( name, factory, 1 ) } ).to.throw( ReferenceError );
+                expect( function() { dolza.register( name, factory, function() { return 0; } ) } )
                     .to.throw( ReferenceError );
-                expect( () => { dolza.register( name, factory, { dep: name } ) } )
+                expect( function() { dolza.register( name, factory, { dep: name } ) } )
                     .to.throw( ReferenceError );
             });
 
-            it( 'will throw an error if `name` is already registered', () => {
+            it( 'will throw an error if `name` is already registered', function() {
                 let name = 'myFactory';
                 dolza.register( name, fibonacciFactory, [ 'fib-gen' ] );
-                expect( () => {
+                expect( function() {
                     dolza.register( name, fancyFactory, [ 'fib-gen', 'prime-gen' ] );
                 }).to.throw( Error );
             });
@@ -369,55 +369,55 @@ describe( 'Dolza (a lightweight dependency injection framework)', () => {
         });
     });
 
-    context( 'when storing data, an object, or a function', () => {
+    context( 'when storing data, an object, or a function', function() {
         let nameF = 'myfunc'
             , myFunction
             ;
 
-        beforeEach( () => {
+        beforeEach( function() {
             dolza = dolzaFactory();
             myFunction = ( a, b ) => {
                 return a + b;
             }
         });
 
-        afterEach( () => {
+        afterEach( function() {
             dolza = null;
             myFunction = null;
         });
 
-        it( 'will accept arguments `(name, data)`', () => {
+        it( 'will accept arguments `(name, data)`', function() {
             sinon.spy( dolza, 'store' );
             dolza.store( nameF, myFunction );
             expect( dolza.store ).to.be.calledOnce();
             expect( dolza.store ).to.be.calledWithExactly( nameF, myFunction );
         });
 
-        it( 'will return the stored data', () => {
+        it( 'will return the stored data', function() {
             dolza.store( nameF, myFunction );
             expect( dolza.get( nameF ) ).to.equal( myFunction );
         });
 
-        it( 'will throw an error if unnamed data is requested', () => {
+        it( 'will throw an error if unnamed data is requested', function() {
             let noName = 'hunter';
             dolza.register( nameF, myFunction );
-            expect( () => { dolza.get( noName ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.get( noName ) } ).to.throw( ReferenceError );
         });
 
-        it( 'will throw an error if `name` or `data` is falsy', () => {
-            expect( () => { dolza.store( '', myFunction ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( undefined, myFunction ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( null, myFunction ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( 0, myFunction ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( NaN, myFunction ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( nameF, '' ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( nameF, undefined ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( nameF, null ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( nameF, 0 ) } ).to.throw( ReferenceError );
-            expect( () => { dolza.store( nameF, NaN ) } ).to.throw( ReferenceError );
+        it( 'will throw an error if `name` or `data` is falsy', function() {
+            expect( function() { dolza.store( '', myFunction ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( undefined, myFunction ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( null, myFunction ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( 0, myFunction ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( NaN, myFunction ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( nameF, '' ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( nameF, undefined ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( nameF, null ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( nameF, 0 ) } ).to.throw( ReferenceError );
+            expect( function() { dolza.store( nameF, NaN ) } ).to.throw( ReferenceError );
         });
 
-        it( 'will update the stored data if `name` is already registered', () => {
+        it( 'will update the stored data if `name` is already registered', function() {
             let myData = [ 0, 1, 2, 3, 4, 5 ];
             dolza.store( nameF, myFunction );
             dolza.store( nameF, myData );
