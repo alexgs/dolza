@@ -4,7 +4,8 @@
   "description": "A lightweight dependency injection framework for Node.js and JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha ./test/new-tests.js",
+    "test:original": "mocha ./test/old-tests.js ./test/async.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,6 @@
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.24.1",
     "chai": "^4.0.2",
-    "chai-as-promised": "^7.0.0",
     "dirty-chai": "^2.0.0",
     "mocha": "^3.0.0",
     "sinon": "^2.3.5",
