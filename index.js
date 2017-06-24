@@ -9,7 +9,7 @@ function dolzaFactory() {
         , factories = Immutable.Map()
         ;
 
-    container.register = ( name, factory, dependencies ) => {
+    container.register = function( name, factory, dependencies ) {
         // Standardize falsy values of `dependencies`
         if ( !dependencies ) {
             // TODO Log a warning unless `dependencies` comes in as undefined
@@ -28,9 +28,13 @@ function dolzaFactory() {
         }
 
         factories = factories.set( name, { fac: factory, dep: dependencies } );
+        return {
+            key: name,
+            dependencies: dependencies
+        };
     };
 
-    container.get = ( name ) => {
+    container.get = function( name ) {
         // If we don't have the requested item in the datastore, try to make it
         // from a registered factory
         if ( !dataStoreHas( name ) ) {
@@ -41,7 +45,7 @@ function dolzaFactory() {
        return dataStore.get( name );
     };
 
-    container.store = ( name, data ) => {
+    container.store = function( name, data ) {
         if ( !name || !data ) {
             throw new ReferenceError( 'Required arguments to `dolza.store` must not be falsy' );
         }
@@ -92,5 +96,6 @@ function dolzaFactory() {
     return container;
 }
 
-export default dolzaFactory();
-export { dolzaFactory as _factory };
+export default dolzaFactory;
+// export default dolzaFactory();
+// export { dolzaFactory as _factory };

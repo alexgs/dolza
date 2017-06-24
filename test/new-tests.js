@@ -6,6 +6,7 @@
 
 import chai, { expect } from 'chai';
 import dirtyChai from 'dirty-chai';
+import dolzaFactory from '../index';
 
 chai.use( dirtyChai );
 
@@ -39,13 +40,29 @@ const userServiceFactory = function userServiceFactoryFunction( db, salt ) {
 };
 
 describe( 'Dolza (a lightweight dependency injection container)', function() {
+    let dolza;
+
+    beforeEach( function() {
+        dolza = dolzaFactory();
+    } );
+
     it( 'passes a canary test', function() {
         expect( true ).to.be.true();
         expect( 1 + 1 ).to.equal( 2 );
     } );
 
     context( 'has a function `register` for registering a factory function that', function() {
-        it( 'returns an object literal describing the factory function' );
+        it( 'returns an object literal describing the factory function', function() {
+
+            let expectedResult = {
+                key: 'db',
+                dependencies: [ 'dbServer', 'dbPort', 'dbName' ]
+                // dependencies: [ 'chumley', 99, 'smart' ]
+            };
+            expect( dolza.register( 'db', dbFactory, [ 'dbServer', 'dbPort', 'dbName' ] ) )
+                .to.deep.equal( expectedResult );
+        } );
+
         it( 'throws an error if the first argument is not a string' );
         it( 'throws an error if the second argument is not a function' );
         it( 'throws an error if the optional third argument is not a string or an array of strings' );
