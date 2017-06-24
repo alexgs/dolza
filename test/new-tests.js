@@ -9,6 +9,26 @@ import dirtyChai from 'dirty-chai';
 
 chai.use( dirtyChai );
 
+// Test fixtures adapted from _Node.js Design Patterns, Second Ed._, Ch. 7
+const dbFactory = function dbFactoryFunction( name, server, port ) {
+    return {
+        getUrl() {
+            return `${server}:${port}/${name}`;
+        }
+    };
+};
+
+const userServiceFactory = function userServiceFactoryFunction( db, salt ) {
+    return {
+        newUser( username, password ) {
+            db.saveUser( username, salt + '$' + password)
+            // TODO Find out how to hash the password cheaply with Node's crypto module
+        },
+
+        login( username, password ) { },
+    }
+};
+
 describe( 'Dolza (a lightweight dependency injection container)', function() {
     it( 'passes a canary test', function() {
         expect( true ).to.be.true();
