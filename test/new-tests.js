@@ -69,7 +69,20 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
     } );
 
     context( 'has a function `store` for storing data that', function() {
-        it( 'returns the key and type of data stored' );
+        it( 'returns the key and type of data stored', function() {
+            let expectedResult = {
+                key: 'dbServer',
+                type: 'string'
+            };
+            expect( dolza.store( 'dbServer', 'chumley' ) ).to.deep.equal( expectedResult );
+
+            expectedResult = {
+                key: 'dbPort',
+                type: 'number'
+            };
+            expect( dolza.store( 'dbPort', 99 ) ).to.deep.equal( expectedResult );
+        } );
+
         it( 'throws an error if the first argument is not a string' );
         it( 'throws an error if the second argument is null or undefined' );
         it( 'accepts null or undefined for the second argument if the optional third argument is `true`' );

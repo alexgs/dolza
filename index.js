@@ -50,6 +50,10 @@ function dolzaFactory() {
             throw new ReferenceError( 'Required arguments to `dolza.store` must not be falsy' );
         }
         dataStore = dataStore.set( name, data );
+        return {
+            key: name,
+            type: typeof data
+        };
     };
 
     function inject( factory, depList ) {
