@@ -144,6 +144,13 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( db.getId() ).to.equal( expectedDbUrl );
         } );
 
+        it( 'implements the singleton pattern for each key', function() {
+            const db1 = dolza.get( 'db' );
+            const db2 = dolza.get( 'db' );
+            expect( db1 === db2 ).to.be.true();
+            expect( db1 ).to.equal( db2 );
+        } );
+
         it( 'correctly instantiates a dependency graph as needed' );
         it( 'correctly waits for asynchronously dependencies to be instantiated' );
 
