@@ -13,12 +13,12 @@ function dolzaFactory() {
     container.get = function( key ) {
         // Key must be a string
         if ( typeof key !== 'string' ) {
-            throw new Error( dolzaFactory.messages.fnGetKeyNotString( key ) );
+            throw new Error( dolzaFactory.messages.argKeyNotString( key ) );
         }
 
         // Verify that the key is registered in the datastore or the factory registry
         if ( !datastoreHas( key ) && !registryHas( key ) ) {
-            throw new Error( dolzaFactory.messages.fnGetNotValidKey( key ) );
+            throw new Error( dolzaFactory.messages.argKeyNotStored( key ) );
         }
 
         // If we don't have the requested item in the datastore, try to make it from a registered factory
@@ -38,6 +38,9 @@ function dolzaFactory() {
         }
 
         // Check for valid arguments
+        if ( !key || typeof key !== 'string' ) {
+            throw new Error( dolzaFactory.messages.argKeyNotString( key ) );
+        }
         if ( !key || !factory ) {
             throw new ReferenceError( 'Required arguments to `dolza.register` must not be falsy' );
         }
@@ -54,7 +57,7 @@ function dolzaFactory() {
 
     container.store = function( key, data ) {
         if ( !key || typeof key !== 'string' ) {
-            throw new Error( dolzaFactory.messages.fnStoreFirstArg );
+            throw new Error( dolzaFactory.messages.argKeyNotString( key ) );
         }
         if ( data === null || data === undefined ) {
             throw new Error( dolzaFactory.messages.fnStoreSecondArg );
@@ -73,7 +76,7 @@ function dolzaFactory() {
     function getFactoryProduct( name ) {
         // This should have already been checked, but double-check anyway
         if ( !registryHas( name ) ) {
-            throw new Error( dolzaFactory.messages.fnGetNotValidKey( name ) );
+            throw new Error( dolzaFactory.messages.argKeyNotStored( name ) );
         }
 
         const record = registry.get( name );
@@ -119,9 +122,10 @@ function dolzaFactory() {
 }
 
 dolzaFactory.messages = {
+    argKeyAlreadyStored: function( key ) { return `Factory ${key} is already registered as a key for a factory or data` },
+    argKeyNotStored: function( key ) { return `Factory ${key} is not registered, and no stored object ${key} was found` },
+    argKeyNotString: function( key ) { return `Argument \`key\` must be a string, but ${key} is a ${typeof key}` },
     badFactoryProduction: function( key ) { return `Factory ${key} failed to create a minimal object` },
-    fnGetKeyNotString: function( key ) { return `Argument \`key\` must be a string, but ${key} is a ${typeof key}` },
-    fnGetNotValidKey: function(key ) { return `Factory ${key} is not registered, and no stored object ${key} was found` },
     fnStoreFirstArg: 'The first argument to method `store` must be a string',
     fnStoreSecondArg: 'The second argument to method `store` may not be null or undefined'
 };

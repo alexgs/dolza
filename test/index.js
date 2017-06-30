@@ -64,8 +64,14 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
                 .to.deep.equal( expectedResult );
         } );
 
-        it( 'throws an error if the first argument is not a string' );
-        it( 'throws an error if the second argument is not a function' );
+        it( 'throws an error if the `key` argument is not a string', function () {
+            expect( function() {
+                dolza.get( 99 );
+            } ).to.throw( Error, dolzaFactory.messages.argKeyNotString( 99 ) );
+        } );
+
+        it( 'throws an error if the `key` argument is already registered' );
+        it( 'throws an error if the `factory` argument is not a function' );
         it( 'throws an error if the optional third argument is not a string or an array of strings' );
     } );
 
@@ -84,11 +90,13 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( dolza.store( 'dbPort', 99 ) ).to.deep.equal( expectedResult );
         } );
 
-        it( 'throws an error if the first argument is not a string', function () {
+        it( 'throws an error if the `key` argument is not a string', function () {
             expect( function storeFirstArg() {
                 dolza.store( 99, 'agent' )
-            } ).to.throw( Error, dolzaFactory.messages.fnStoreFirstArg );
+            } ).to.throw( Error, dolzaFactory.messages.argKeyNotString( 99 ) );
         } );
+
+        it( 'throws an error if the `key` argument is already registered' );
 
         it( 'throws an error if the second argument is null or undefined', function () {
             expect( function storeSecondArgNull() {
@@ -176,16 +184,16 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( userService.getId() ).to.equal( expectedServiceId );
         } );
 
-        it( 'throws an error if the key is not a string', function () {
+        it( 'throws an error if the `key` argument is not a string', function () {
             expect( function() {
                 dolza.get( 99 );
-            } ).to.throw( Error, dolzaFactory.messages.fnGetKeyNotString( 99 ) );
+            } ).to.throw( Error, dolzaFactory.messages.argKeyNotString( 99 ) );
         } );
 
         it( 'throws an error if the key is not registered', function () {
             expect( function() {
                 dolza.get( 'no-such-key' )
-            } ).to.throw( Error, dolzaFactory.messages.fnGetNotValidKey( 'no-such-key' ) );
+            } ).to.throw( Error, dolzaFactory.messages.argKeyNotStored( 'no-such-key' ) );
         } );
     } );
 } );
