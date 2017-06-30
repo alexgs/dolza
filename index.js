@@ -102,7 +102,7 @@ function dolzaFactory() {
             return factory();
         } else {
             // Retrieve the dependencies
-            const argumentList = dependencyList.map( ( value ) => {
+            const argumentList = _.map( dependencyList, value => {
                 return container.get( value );
             });
 

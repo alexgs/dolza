@@ -165,7 +165,16 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             } ).to.throw( Error, dolzaFactory.messages.badFactoryProduction( badArrayId ) );
         } );
 
-        it( 'correctly instantiates a dependency graph as needed' );
+        it( 'correctly instantiates a dependency graph as needed', function () {
+            const expectedServiceId = `${data.dbServer}:${data.dbPort}/${data.dbName}$${data.salt}`;
+            const expectedRoutesId = `routes ${data.uuid} :: ${expectedServiceId}`;
+            const userRoutes = dolza.get( 'userRoutes' );
+            expect( userRoutes.getId() ).to.equal( expectedRoutesId );
+
+            const userService = dolza.get( 'userService' );
+            expect( userService.getId() ).to.equal( expectedServiceId );
+        } );
+
         it( 'correctly waits for asynchronously dependencies to be instantiated' );
 
         it( 'throws an error if the key is not a string', function () {
