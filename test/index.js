@@ -151,6 +151,13 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( db.getId() ).to.equal( expectedDbUrl );
         } );
 
+        it( 'returns an object created from a factory that doesn\'t accept arguments', function () {
+            const factoryName = 'Hamburg';
+            const factoryHamburg = function factoryFunction() { return [ 'Chief', 'Jaime' ] };
+            dolza.register( factoryName, factoryHamburg );
+            expect( dolza.get( factoryName ) ).to.deep.equal( [ 'Chief', 'Jaime' ] );
+        } );
+
         it( 'implements the singleton pattern for each key', function() {
             const db1 = dolza.get( 'db' );
             const db2 = dolza.get( 'db' );
