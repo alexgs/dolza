@@ -107,8 +107,17 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
         it( 'returns an object created from a factory when given a key for a factory function' );
         it( 'correctly instantiates a dependency graph as needed' );
         it( 'correctly waits for asynchronously dependencies to be instantiated' );
-        it( 'throws an error if the key is not a string' );
-        it( 'throws an error if the key is not registered' );
+        it( 'throws an error if the key is not a string', function () {
+            expect( function() {
+                dolza.get( 99 );
+            } ).to.throw( Error, dolzaFactory.messages.fnGetKeyNotString( 99 ) );
+        } );
+
+        it( 'throws an error if the key is not registered', function () {
+            expect( function() {
+                dolza.get( 'no-such-key' )
+            } ).to.throw( Error, dolzaFactory.messages.fnGetNotValidKey( 'no-such-key' ) );
+        } );
     } );
 
     // TODO Maybe? context( 'when listing registered modules', function() {} );

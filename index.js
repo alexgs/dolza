@@ -5,7 +5,7 @@ import Immutable from 'immutable';
 
 function dolzaFactory() {
     let container = Object.create( null )
-        , dataStore = Immutable.Map()
+        , datastore = Immutable.Map()
         , factories = Immutable.Map()
         ;
 
@@ -34,15 +34,24 @@ function dolzaFactory() {
         };
     };
 
-    container.get = function( name ) {
-        // If we don't have the requested item in the datastore, try to make it
-        // from a registered factory
-        if ( !dataStoreHas( name ) ) {
-            let product = getFactoryProduct( name );
-            container.store( name, product );
+    container.get = function( key ) {
+        // Key must be a string
+        if ( typeof key !== 'string' ) {
+            throw new Error( dolzaFactory.messages.fnGetKeyNotString( key ) );
         }
 
-       return dataStore.get( name );
+        // Verify that the key is registered in the datastore or the factory registry
+        if ( !datastoreHas( key ) && !registryHas( key ) ) {
+            throw new Error( dolzaFactory.messages.fnGetNotValidKey( key ) );
+        }
+
+        // If we don't have the requested item in the datastore, try to make it from a registered factory
+        if ( !datastoreHas( key ) ) {
+            let product = getFactoryProduct( key );
+            container.store( key, product );
+        }
+
+       return datastore.get( key );
     };
 
     container.store = function( name, data ) {
@@ -52,7 +61,7 @@ function dolzaFactory() {
         if ( data === null || data === undefined ) {
             throw new Error( dolzaFactory.messages.fnStoreSecondArg );
         }
-        dataStore = dataStore.set( name, data );
+        datastore = datastore.set( name, data );
         return {
             key: name,
             type: typeof data
@@ -78,8 +87,8 @@ function dolzaFactory() {
         }
     }
 
-    function dataStoreHas( name ) {
-        return dataStore.has( name );
+    function datastoreHas( name ) {
+        return datastore.has( name );
     }
 
     function getFactoryProduct( name ) {
@@ -100,10 +109,16 @@ function dolzaFactory() {
         return factoryProduct;
     }
 
+    function registryHas( key ) {
+        return factories.has( key );
+    }
+
     return container;
 }
 
 dolzaFactory.messages = {
+    fnGetKeyNotString: function( key ) { return `Argument \`key\` must be a string, but ${key} is a ${typeof key}` },
+    fnGetNotValidKey: function(key ) { return `Factory ${key} is not registered, and no stored object ${key} was found` },
     fnStoreFirstArg: 'The first argument to method `store` must be a string',
     fnStoreSecondArg: 'The second argument to method `store` may not be null or undefined'
 };
