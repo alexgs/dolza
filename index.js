@@ -46,8 +46,11 @@ function dolzaFactory() {
     };
 
     container.store = function( name, data ) {
-        if ( !name || !data ) {
-            throw new ReferenceError( 'Required arguments to `dolza.store` must not be falsy' );
+        if ( !name || typeof name !== 'string' ) {
+            throw new Error( dolzaFactory.messages.fnStoreFirstArg );
+        }
+        if ( data === null || data === undefined ) {
+            throw new Error( dolzaFactory.messages.fnStoreSecondArg );
         }
         dataStore = dataStore.set( name, data );
         return {
@@ -100,6 +103,9 @@ function dolzaFactory() {
     return container;
 }
 
+dolzaFactory.messages = {
+    fnStoreFirstArg: 'The first argument to method `store` must be a string',
+    fnStoreSecondArg: 'The second argument to method `store` may not be null or undefined'
+};
+
 export default dolzaFactory;
-// export default dolzaFactory();
-// export { dolzaFactory as _factory };

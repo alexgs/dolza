@@ -83,8 +83,22 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( dolza.store( 'dbPort', 99 ) ).to.deep.equal( expectedResult );
         } );
 
-        it( 'throws an error if the first argument is not a string' );
-        it( 'throws an error if the second argument is null or undefined' );
+        it( 'throws an error if the first argument is not a string', function () {
+            expect( function storeFirstArg() {
+                dolza.store( 99, 'agent' )
+            } ).to.throw( Error, dolzaFactory.messages.fnStoreFirstArg );
+        } );
+
+        it( 'throws an error if the second argument is null or undefined', function () {
+            expect( function storeSecondArgNull() {
+                dolza.store( 'null', null )
+            } ).to.throw( Error, dolzaFactory.messages.fnStoreSecondArg );
+
+            expect( function storeSecondArgUndef() {
+                dolza.store( 'undef', undefined )
+            } ).to.throw( Error, dolzaFactory.messages.fnStoreSecondArg );
+        } );
+
         it( 'accepts null or undefined for the second argument if the optional third argument is `true`' );
     } );
 
