@@ -4,8 +4,7 @@
   "description": "A lightweight dependency injection framework for Node.js and JavaScript",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./test/new-tests.js",
-    "test:original": "mocha ./test/old-tests.js ./test/async.js"
+    "test": "mocha ./test/index.js"
   },
   "repository": {
     "type": "git",

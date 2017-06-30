@@ -59,7 +59,6 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             let expectedResult = {
                 key: 'db',
                 dependencies: [ 'dbServer', 'dbPort', 'dbName' ]
-                // dependencies: [ 'chumley', 99, 'smart' ]
             };
             expect( dolza.register( 'db', dbFactory, [ 'dbServer', 'dbPort', 'dbName' ] ) )
                 .to.deep.equal( expectedResult );
@@ -166,6 +165,8 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
         } );
 
         it( 'correctly instantiates a dependency graph as needed', function () {
+            // In tests for v0.1.x, I referred to this type of test (with nested dependencies) as "async" but that is
+            // obviously a misnomer.
             const expectedServiceId = `${data.dbServer}:${data.dbPort}/${data.dbName}$${data.salt}`;
             const expectedRoutesId = `routes ${data.uuid} :: ${expectedServiceId}`;
             const userRoutes = dolza.get( 'userRoutes' );
@@ -174,8 +175,6 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             const userService = dolza.get( 'userService' );
             expect( userService.getId() ).to.equal( expectedServiceId );
         } );
-
-        it( 'correctly waits for asynchronously dependencies to be instantiated' );
 
         it( 'throws an error if the key is not a string', function () {
             expect( function() {
@@ -189,6 +188,4 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             } ).to.throw( Error, dolzaFactory.messages.fnGetNotValidKey( 'no-such-key' ) );
         } );
     } );
-
-    // TODO Maybe? context( 'when listing registered modules', function() {} );
 } );
