@@ -4,12 +4,26 @@
 import Immutable from 'immutable';
 import _ from 'lodash';
 
+/**
+ * A simple dependency injection container
+ * @typedef {Object} Dolza
+ * @property {Function} get Retrieves a stored value
+ */
+
+/**
+ * @returns {Object} Dolza
+ */
 function dolzaFactory() {
     const container = Object.create( null );
       let datastore = Immutable.Map()
         , registry  = Immutable.Map()
         ;
 
+    /**
+     *
+     * @param key
+     * @returns {V}
+     */
     container.get = function( key ) {
         // Key must be a string
         if ( typeof key !== 'string' ) {
