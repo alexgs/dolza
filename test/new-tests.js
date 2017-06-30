@@ -151,6 +151,20 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
             expect( db1 ).to.equal( db2 );
         } );
 
+        it( 'throws an error if the factory doesn\'t create anything', function () {
+            const badObjectId = 'bad-object';
+            const badArrayId = 'badArray';
+            dolza.register( badObjectId, function badObjectFactory() { return {}; } );
+            expect( function getBadObject() {
+                dolza.get( badObjectId );
+            } ).to.throw( Error, dolzaFactory.messages.badFactoryProduction( badObjectId ) );
+
+            dolza.register( badArrayId, function badArrayFactory() { return []; } );
+            expect( function getBadArray() {
+                dolza.get( badArrayId );
+            } ).to.throw( Error, dolzaFactory.messages.badFactoryProduction( badArrayId ) );
+        } );
+
         it( 'correctly instantiates a dependency graph as needed' );
         it( 'correctly waits for asynchronously dependencies to be instantiated' );
 

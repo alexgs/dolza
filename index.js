@@ -2,37 +2,13 @@
 // Adapted from _Node.js Design Patterns_, Ch. 5, by Mario Casciaro (ISBN 9781783287314)
 
 import Immutable from 'immutable';
+import _ from 'lodash';
 
 function dolzaFactory() {
-    let container = Object.create( null )
-        , datastore = Immutable.Map()
-        , factories = Immutable.Map()
+    const container = Object.create( null );
+      let datastore = Immutable.Map()
+        , registry  = Immutable.Map()
         ;
-
-    container.register = function( name, factory, dependencies ) {
-        // Standardize falsy values of `dependencies`
-        if ( !dependencies ) {
-            // TODO Log a warning unless `dependencies` comes in as undefined
-            dependencies = null;
-        }
-
-        // Check for valid arguments
-        if ( !name || !factory ) {
-            throw new ReferenceError( 'Required arguments to `dolza.register` must not be falsy' );
-        }
-        if ( dependencies && !Array.isArray( dependencies ) ) {
-            throw new ReferenceError( 'Argument `dependencies` of `dolza.register` must be an Array' );
-        }
-        if ( factories.has( name ) ) {
-            throw new Error( `Attempt to re-register name ${name} is illegal` );
-        }
-
-        factories = factories.set( name, { fac: factory, dep: dependencies } );
-        return {
-            key: name,
-            dependencies: dependencies
-        };
-    };
 
     container.get = function( key ) {
         // Key must be a string
@@ -47,76 +23,103 @@ function dolzaFactory() {
 
         // If we don't have the requested item in the datastore, try to make it from a registered factory
         if ( !datastoreHas( key ) ) {
-            let product = getFactoryProduct( key );
+            const product = getFactoryProduct( key );
             container.store( key, product );
         }
 
        return datastore.get( key );
     };
 
-    container.store = function( name, data ) {
-        if ( !name || typeof name !== 'string' ) {
+    container.register = function( key, factory, dependencies ) {
+        // Standardize falsy values of `dependencies`
+        if ( !dependencies ) {
+            // TODO Log a warning unless `dependencies` comes in as undefined
+            dependencies = null;
+        }
+
+        // Check for valid arguments
+        if ( !key || !factory ) {
+            throw new ReferenceError( 'Required arguments to `dolza.register` must not be falsy' );
+        }
+        if ( dependencies && !Array.isArray( dependencies ) ) {
+            throw new ReferenceError( 'Argument `dependencies` of `dolza.register` must be an Array' );
+        }
+        if ( registryHas( key ) ) {
+            throw new Error( `Attempt to re-register name ${key} is illegal` );
+        }
+
+        registry = registry.set( key, { factory, dependencies } );
+        return { key, dependencies };
+    };
+
+    container.store = function( key, data ) {
+        if ( !key || typeof key !== 'string' ) {
             throw new Error( dolzaFactory.messages.fnStoreFirstArg );
         }
         if ( data === null || data === undefined ) {
             throw new Error( dolzaFactory.messages.fnStoreSecondArg );
         }
-        datastore = datastore.set( name, data );
+        datastore = datastore.set( key, data );
         return {
-            key: name,
+            key: key,
             type: typeof data
         };
     };
-
-    function inject( factory, depList ) {
-        if ( depList !== null && !Array.isArray( depList ) ) {
-            throw new TypeError( 'Expected parameter `depList` to be null or an array' );
-        }
-
-        if ( depList === null ) {
-            // No dependencies, so just call the factory
-            return factory();
-        } else {
-            // Retrieve the dependencies
-            let depObjects = depList.map( ( value ) => {
-                return container.get( value );
-            });
-
-            // Call the factory, providing its dependent objects
-            return factory( ...depObjects );
-        }
-    }
 
     function datastoreHas( name ) {
         return datastore.has( name );
     }
 
     function getFactoryProduct( name ) {
-        let record = factories.get( name );
-        if ( !record ) {
-            // record is falsy
-            throw new ReferenceError( `Factory ${name} is not registered, `
-                + `and no stored object ${name} was found` );
+        // This should have already been checked, but double-check anyway
+        if ( !registryHas( name ) ) {
+            throw new Error( dolzaFactory.messages.fnGetNotValidKey( name ) );
         }
 
+        const record = registry.get( name );
+
         // Inject the dependencies & store the object produced by the factory
-        let factoryProduct = inject( record.fac, record.dep );
-        if ( !factoryProduct ) {
-            // A simple error can make a factory that doesn't return anything,
-            // so we should let the dev know that something isn't right.
-            throw new Error( `${name} has a falsy product from its factory` );
+        const factoryProduct = inject( record.factory, record.dependencies );
+
+
+        // The factory should return something; minimal values include:
+        //   - a truthy primitive (although, technically, a factory should **NOT** return a primitive)
+        //   - an object with its own property
+        //   - an array with one value
+        if ( !factoryProduct || _.keys( factoryProduct ).length < 1 ) {
+            throw new Error( dolzaFactory.messages.badFactoryProduction( name ) );
         }
         return factoryProduct;
     }
 
+    function inject( factory, dependencyList ) {
+        if ( dependencyList !== null && !Array.isArray( dependencyList ) ) {
+            throw new TypeError( 'Expected parameter `dependencyList` to be null or an array' );
+        }
+
+        if ( dependencyList === null ) {
+            // No dependencies, so just call the factory
+            return factory();
+        } else {
+            // Retrieve the dependencies
+            const argumentList = dependencyList.map( ( value ) => {
+                return container.get( value );
+            });
+
+            // Call the factory, providing its dependent objects
+            return factory( ...argumentList );
+        }
+    }
+
     function registryHas( key ) {
-        return factories.has( key );
+        return registry.has( key );
     }
 
     return container;
 }
 
 dolzaFactory.messages = {
+    badFactoryProduction: function( key ) { return `Factory ${key} failed to create a minimal object` },
     fnGetKeyNotString: function( key ) { return `Argument \`key\` must be a string, but ${key} is a ${typeof key}` },
     fnGetNotValidKey: function(key ) { return `Factory ${key} is not registered, and no stored object ${key} was found` },
     fnStoreFirstArg: 'The first argument to method `store` must be a string',
