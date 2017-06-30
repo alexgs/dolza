@@ -8,38 +8,10 @@ import chai, { expect } from 'chai';
 import dirtyChai from 'dirty-chai';
 import _ from 'lodash';
 
-import dolzaFactory from '../index';
+import fixtures from './fixtures';
+import dolzaFactory from '../src/index';
 
 chai.use( dirtyChai );
-
-// Test fixtures adapted from _Node.js Design Patterns, Second Ed._, Ch. 7
-const dbFactory = function dbFactoryFunction( name, server, port ) {
-    return {
-        getId() {
-            return this.getUrl();
-        },
-
-        getUrl() {
-            return `${server}:${port}/${name}`;
-        }
-    };
-};
-
-const userRoutesFactory = function userRoutesFactoryFunction( userService, uuid ) {
-    return {
-        getId() {
-            return `routes ${uuid} :: ${userService.getId()}`;
-        }
-    };
-};
-
-const userServiceFactory = function userServiceFactoryFunction( db, salt ) {
-    return {
-        getId() {
-            return `${db.getId()}$${salt}`;
-        }
-    };
-};
 
 describe( 'Dolza (a lightweight dependency injection container)', function() {
     let dolza;
@@ -60,7 +32,7 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
                 key: 'db',
                 dependencies: [ 'dbServer', 'dbPort', 'dbName' ]
             };
-            expect( dolza.register( 'db', dbFactory, [ 'dbServer', 'dbPort', 'dbName' ] ) )
+            expect( dolza.register( 'db', fixtures.dbFactory, [ 'dbServer', 'dbPort', 'dbName' ] ) )
                 .to.deep.equal( expectedResult );
         } );
 
@@ -112,31 +84,9 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
     } );
 
     context( 'has a function `get` that accepts a key and', function() {
-        const data = {
-            dbServer: 'chumley',
-            dbPort: 99,
-            dbName: 'smart',
-            salt: 'a19b27c36d48e50',
-            uuid: 'jfe354356VDAasdnceqKNNFDOI4TNVM'
-        };
-        const factories = {
-            db: {
-                factory: dbFactory,
-                args: [ 'dbName', 'dbServer', 'dbPort' ]
-            },
-            userRoutes: {
-                factory: userRoutesFactory,
-                args: [ 'userService', 'uuid' ]
-            },
-            userService: {
-                factory: userServiceFactory,
-                args: [ 'db', 'salt' ]
-            }
-        };
-
         beforeEach( function () {
-            _.forEach( data, (value, key) => dolza.store( key, value ) );
-            _.forEach( factories, (value, key) => dolza.register( key, value.factory, value.args ) );
+            _.forEach( fixtures.data, (value, key) => dolza.store( key, value ) );
+            _.forEach( fixtures.factories, (value, key) => dolza.register( key, value.factory, value.args ) );
         } );
 
         it( 'returns stored data when given a key for stored data', function () {
@@ -146,6 +96,7 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
         } );
 
         it( 'returns an object created from a factory when given a key for a factory function', function () {
+            const data = fixtures.data;
             const db = dolza.get( 'db' );
             const expectedDbUrl = `${data.dbServer}:${data.dbPort}/${data.dbName}`;
             expect( db.getId() ).to.equal( expectedDbUrl );
@@ -182,6 +133,7 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
         it( 'correctly instantiates a dependency graph as needed', function () {
             // In tests for v0.1.x, I referred to this type of test (with nested dependencies) as "async" but that is
             // obviously a misnomer.
+            const data = fixtures.data;
             const expectedServiceId = `${data.dbServer}:${data.dbPort}/${data.dbName}$${data.salt}`;
             const expectedRoutesId = `routes ${data.uuid} :: ${expectedServiceId}`;
             const userRoutes = dolza.get( 'userRoutes' );
