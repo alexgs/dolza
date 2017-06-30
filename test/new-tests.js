@@ -6,6 +6,8 @@
 
 import chai, { expect } from 'chai';
 import dirtyChai from 'dirty-chai';
+import _ from 'lodash';
+
 import dolzaFactory from '../index';
 
 chai.use( dirtyChai );
@@ -103,10 +105,48 @@ describe( 'Dolza (a lightweight dependency injection container)', function() {
     } );
 
     context( 'has a function `get` that accepts a key and', function() {
-        it( 'returns stored data when given a key for stored data' );
-        it( 'returns an object created from a factory when given a key for a factory function' );
+        const data = {
+            dbServer: 'chumley',
+            dbPort: 99,
+            dbName: 'smart',
+            salt: 'a19b27c36d48e50',
+            uuid: 'jfe354356VDAasdnceqKNNFDOI4TNVM'
+        };
+        const factories = {
+            db: {
+                factory: dbFactory,
+                args: [ 'dbName', 'dbServer', 'dbPort' ]
+            },
+            userRoutes: {
+                factory: userRoutesFactory,
+                args: [ 'userService', 'uuid' ]
+            },
+            userService: {
+                factory: userServiceFactory,
+                args: [ 'db', 'salt' ]
+            }
+        };
+
+        beforeEach( function () {
+            _.forEach( data, (value, key) => dolza.store( key, value ) );
+            _.forEach( factories, (value, key) => dolza.register( key, value.factory, value.args ) );
+        } );
+
+        it( 'returns stored data when given a key for stored data', function () {
+            expect( dolza.get( 'dbServer' ) ).to.equal( 'chumley' );
+            expect( dolza.get( 'dbPort' ) ).to.equal( 99 );
+            expect( dolza.get( 'dbName' ) ).to.equal( 'smart' );
+        } );
+
+        it( 'returns an object created from a factory when given a key for a factory function', function () {
+            const db = dolza.get( 'db' );
+            const expectedDbUrl = `${data.dbServer}:${data.dbPort}/${data.dbName}`;
+            expect( db.getId() ).to.equal( expectedDbUrl );
+        } );
+
         it( 'correctly instantiates a dependency graph as needed' );
         it( 'correctly waits for asynchronously dependencies to be instantiated' );
+
         it( 'throws an error if the key is not a string', function () {
             expect( function() {
                 dolza.get( 99 );
