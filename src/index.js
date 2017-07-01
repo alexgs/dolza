@@ -4,6 +4,10 @@
 import Immutable from 'immutable';
 import _ from 'lodash';
 
+// TODO Complete pending regular tests
+// TODO Add type definitions with JSDoc or TypeScript, so it looks pretty in WebStorm for me
+// TODO Update README and docs
+
 function dolzaFactory() {
     const container = Object.create( null );
       let datastore = Immutable.Map()
