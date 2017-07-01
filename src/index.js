@@ -4,6 +4,9 @@
 import Immutable from 'immutable';
 import _ from 'lodash';
 
+// TODO Merge changes from branch 'development'
+// TODO Add type definitions with JSDoc or TypeScript, so it looks pretty in WebStorm for me
+
 /**
  * A simple dependency injection container
  * @typedef {Object} Dolza

@@ -2,12 +2,6 @@
 
 Dolza is a lightweight dependency injection container for JavaScript and Node.js, based on Chapter 5 of _Node.js Design Patterns_ by Mario Casciaro (ISBN 9781783287314).
 
-## TODO
-
-1. Add remain (pre)production tests
-1. Complete pending regular tests
-1. Add type definitions with JSDoc or TypeScript, so it looks pretty in WebStorm for me
-
 ## Basic Usage
 
 First, create some factories:
